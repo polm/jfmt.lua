@@ -24,3 +24,15 @@ Output:
     ぽくて実に弱った。これが人間の飲む煙草というものである事はようやく
     この頃知った。
 
+The default width is 35 characters. You can change it by using the `-w`
+parameter. 
+
+Instead of wrapping lines to a fixed width, you can add zero-width space
+characters wherever a word break would be OK using the `-z` flag. The output
+will look the same as the input, but should wrap only at word boundaries
+wherever zero-width spaces are supported. (Note that in the browser you will
+need to set `word-break: keep-all` to disable default behavior.)
+
+## License
+
+WTFPL, do as you please.
