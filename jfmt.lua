@@ -31,25 +31,40 @@ function freader(fname)
   end
 end
 
+function swidth(word)
+  -- as a rule, mecab tokens will have either half-width or 
+  -- full-width characters but not both
+  if string.match(word, '[A-z0-9]') then 
+    return utf8.len(word) 
+  end
+  return 2 * utf8.len(word)
+end
+
 function reflow(words, width)
+  width = width * 2
   local out = ''
   local cline = ''
+  local clinew = 0
   local wi = 1
 
   while wi < #words + 1 do
     local chunk = words[wi].token
+    local chunkw = swidth(words[wi].token)
     wi = wi + 1
 
     while not split_ok(words[wi]) do
       chunk = chunk .. words[wi].token
+      chunkw = chunkw + swidth(words[wi].token)
       wi = wi + 1
     end
     
-    if utf8.len(cline .. chunk) < width then
+    if clinew + chunkw < width then
       cline = cline .. chunk
+      clinew = clinew + chunkw
     else
       out = out .. cline .. '\n'
       cline = chunk
+      clinew = chunkw
     end
   end
   return out .. cline
@@ -81,7 +96,7 @@ function split_ok(word)
 end
 
 function get_words(text)
-  local tagger = Mecab:new("")
+  local tagger = Mecab:new('--node-format %M\\t%H\\n')
   local lines = split(tagger:parse(text), "\n")
   local words = {}
   for ii, line in ipairs(lines) do
